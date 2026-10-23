@@ -14,8 +14,8 @@
 **Contents**
 
 1. [LOG4J-SDID-INJECTION — RFC 5424 SD-ID injection](#advisory-1--log4j-sdid-injection--rfc-5424-sd-id-injection)
-2. [LOG4J-RFC5424-ATTR-DRIFT — 3.x drops the 2.x `Rfc5424Layout` attribute names](#advisory-2--log4j-rfc5424-attr-drift--3x-drops-the-2-x-rfc5424layout-attribute-names)
-3. [LOG4J-JSON-NONFINITE — 3.x `JsonTemplateLayout` emits invalid JSON](#advisory-3--log4j-json-nonfinite--3-x-jsontemplatelayout-emits-invalid-json)
+2. [LOG4J-RFC5424-ATTR-DRIFT — 3.x drops the 2.x `Rfc5424Layout` attribute names](#advisory-2--log4j-rfc5424-attr-drift--3x-drops-the-2x-rfc5424layout-attribute-names)
+3. [LOG4J-JSON-NONFINITE — 3.x `JsonTemplateLayout` emits invalid JSON](#advisory-3--log4j-json-nonfinite--3x-jsontemplatelayout-emits-invalid-json)
 
 ---
 

@@ -20,8 +20,8 @@
 | # | Identifier | One line | Severity | Affected |
 |---|---|---|---|---|
 | 1 | [`LOG4J-SDID-INJECTION`](#1-summary) | An unescaped RFC 5424 `SD-ID` lets attacker data forge syslog records — on **both** the 2.x and 3.x lines | **High** | All 2.x and 3.x releases tested; every upstream branch |
-| 2 | [`LOG4J-RFC5424-ATTR-DRIFT`](#101-loglj-rfc5424-attr-drift) | A 2.x `Rfc5424Layout` configuration silently loses its newline-escaping control on 3.x | Medium–High | 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
-| 3 | [`LOG4J-JSON-NONFINITE`](#102-loglj-json-nonfinite) | The CVE-2026-34481 fix was never ported to 3.x, so a JSON layout can emit an invalid `NaN` token | Medium | 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
+| 2 | [`LOG4J-RFC5424-ATTR-DRIFT`](#101-log4j-rfc5424-attr-drift) | A 2.x `Rfc5424Layout` configuration silently loses its newline-escaping control on 3.x | Medium–High | 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
+| 3 | [`LOG4J-JSON-NONFINITE`](#102-log4j-json-nonfinite) | The CVE-2026-34481 fix was never ported to 3.x, so a JSON layout can emit an invalid `NaN` token | Medium | 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
 
 All three are live-proven against released artifacts, not inferred from source reading. The raw
 captures are in [`docs/evidence/`](docs/evidence/).
@@ -377,7 +377,7 @@ Two packaging notes, both reproduced by the script:
   The working stack for beta3 is `log4j-kit` + `log4j-core` + `log4j-plugins` at 3.0.0-beta3
   plus `log4j-api:2.24.1`.
 * The two releases disagree about attribute names (see
-  [§10.1](#101-loglj-rfc5424-attr-drift)), so each stack is given the configuration its own
+  [§10.1](#101-log4j-rfc5424-attr-drift)), so each stack is given the configuration its own
   release accepts. A configuration written for 2.x works on 3.0.0-beta2 and is silently ignored
   by 3.0.0-beta3.
 
@@ -921,8 +921,8 @@ finding — a single value silently corrupts the log stream — and both affect 
 
 | Identifier | Component | Class | Severity | Affected |
 |---|---|---|---|---|
-| [`LOG4J-RFC5424-ATTR-DRIFT`](#101-loglj-rfc5424-attr-drift) | `Rfc5424Layout` (log4j-core) | CWE-117 · CWE-1188 | Medium–High | Log4j 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
-| [`LOG4J-JSON-NONFINITE`](#102-loglj-json-nonfinite) | `log4j-layout-template-json` | CWE-20 · CWE-1330 | Medium | Log4j 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
+| [`LOG4J-RFC5424-ATTR-DRIFT`](#101-log4j-rfc5424-attr-drift) | `Rfc5424Layout` (log4j-core) | CWE-117 · CWE-1188 | Medium–High | Log4j 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
+| [`LOG4J-JSON-NONFINITE`](#102-log4j-json-nonfinite) | `log4j-layout-template-json` | CWE-20 · CWE-1330 | Medium | Log4j 3.0.0-beta2, 3.0.0-beta3, `origin/main` |
 
 Neither has a CVE, and neither is fixed. Raw evidence for both is in
 [`docs/evidence/`](docs/evidence/): [`poc-attr-drift.txt`](docs/evidence/poc-attr-drift.txt) and
@@ -977,7 +977,7 @@ gone. The result:
 
 † The `origin/main` column is read from the 3.x source (`origin/main`, `3.0.0-SNAPSHOT`); the
 other three columns are measured by configuring each attribute on its own and reading back the
-startup diagnostics — see [§10.1](#101-loglj-rfc5424-attr-drift), "Which attribute spellings each
+startup diagnostics — see [§10.1](#101-log4j-rfc5424-attr-drift), "Which attribute spellings each
 release accepts", in
 [`docs/evidence/poc-attr-drift.txt`](docs/evidence/poc-attr-drift.txt).
 
@@ -1199,7 +1199,7 @@ this to upstream yourself.
 
 ### 12.2 If you maintain Log4j
 
-The fix is small and the change is already drafted — see [§7.1](#71-proposed-upstream-patch).
+The fix is small and the change is already drafted — see [§7.1](#71-upstream-fix--2x).
 What upstream would need:
 
 * Acknowledgement, and a named committer for the fix.
@@ -1212,7 +1212,7 @@ What upstream would need:
 
 ### 12.3 If you operate Log4j
 
-Until a fix exists, [§7.4](#74-user-side-workarounds) lists the mitigations that work. The
+Until a fix exists, [§7.4](#74-user-side-workarounds-until-an-upstream-fix-exists) lists the mitigations that work. The
 short version: do not let untrusted data reach an SD-ID. If it already does, treat the affected
 collector as untrustworthy, because the log stream it receives can contain records that the
 application never produced.
@@ -1247,7 +1247,7 @@ See [`SECURITY.md`](SECURITY.md).
    `log4j-layout-template-json` and `log4j-1.2-api`, to catch the CVE-2026-34478
    "silently renamed attribute" class in bulk. Result: **0 removed attribute names** on the 2.x
    line (§9.2). The same diff run against the 3.x tree is what surfaced
-   [§10.1](#101-loglj-rfc5424-attr-drift).
+   [§10.1](#101-log4j-rfc5424-attr-drift).
 4. **Live differential testing.** Exercised the real 2.17.1 / 2.24.3 / 2.26.1 / 3.0.0-beta2 /
    3.0.0-beta3 jars against hostile inputs with content-preservation assertions, and against a
    localhost syslog sink.
@@ -1263,10 +1263,10 @@ See [`SECURITY.md`](SECURITY.md).
 7. **Attribute probe.** For each release of each line, every candidate `Rfc5424Layout`
    attribute was configured on its own and the startup diagnostics read back, so "which spelling
    does this version accept" is a measured answer rather than an inference from the source
-   ([§10.1](#101-loglj-rfc5424-attr-drift)).
+   ([§10.1](#101-log4j-rfc5424-attr-drift)).
 8. **Cross-line CVE regression.** For CVE-2026-34481, the 2.x fix was bisected
    (2.25.3 → 2.25.4) and then the same event was replayed against both 3.x releases to establish
-   that the fix was never ported ([§10.2](#102-loglj-json-nonfinite)).
+   that the fix was never ported ([§10.2](#102-log4j-json-nonfinite)).
 
 All testing was contained: **localhost sockets only, no traffic to third parties.**
 
