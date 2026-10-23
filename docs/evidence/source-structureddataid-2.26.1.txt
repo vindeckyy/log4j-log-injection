@@ -1,0 +1,42 @@
+# Annotated source — StructuredDataId, Log4j 2.26.1
+
+Source: rel/2.26.1:log4j-api/src/main/java/org/apache/logging/log4j/message/StructuredDataId.java
+Retrieved 2026-10-23T13:27:40Z from https://github.com/apache/logging-log4j2
+
+```java
+  50:      */
+  51:     public static final String RESERVED = "-1";
+  52: 
+  53:     private static final long serialVersionUID = -8252896346202183738L;
+  54:     private static final int MAX_LENGTH = 32;
+  55:     private static final String AT_SIGN = "@";
+  56: 
+  57:     private final String name;
+  58:     private final String enterpriseNumber;
+  98:      * @since 2.9.0
+  99:      */
+ 100:     public StructuredDataId(final String name, final String[] required, final String[] optional, int maxLength) {
+ 101:         int index = -1;
+ 102:         if (name != null) {
+ 103:             if (maxLength <= 0) {
+ 104:                 maxLength = MAX_LENGTH;
+ 105:             }
+ 106:             if (name.length() > maxLength) {
+ 107:                 throw new IllegalArgumentException(
+ 108:                         String.format("Length of id %s exceeds maximum of %d characters", name, maxLength));
+ 109:             }
+ 110:             index = name.indexOf(AT_SIGN);
+ 111:         }
+ 112: 
+ 113:         if (index > 0) {
+ 114:             this.name = name.substring(0, index);
+ 115:             this.enterpriseNumber = name.substring(index + 1).trim();
+ 116:         } else {
+ 117:             this.name = name;
+ 118:             this.enterpriseNumber = RESERVED;
+ 119:         }
+ 120:         this.required = required;
+```
+
+The only validation is a length check. RFC 5424 6.3.3 additionally forbids
+SPACE, ']', '"' and '=' in an SD-ID - none of which is checked.

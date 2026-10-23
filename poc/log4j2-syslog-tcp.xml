@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PoC config B: network syslog over TCP.
+
+  protocol="TCP" is the SocketAppender default and is newline-framed
+  (RFC 6587), the transport used by essentially every central log collector.
+  newLineEscape is enabled and is bypassed.
+-->
+<Configuration status="WARN">
+  <Appenders>
+    <Socket name="NET" host="127.0.0.1" port="${sys:syslogPort:-5140}" protocol="TCP" immediateFlush="true">
+      <Rfc5424Layout id="default@32473" appName="app" newLine="true" newLineEscape="\\n" includeMDC="true"/>
+    </Socket>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="NET"/>
+    </Root>
+  </Loggers>
+</Configuration>

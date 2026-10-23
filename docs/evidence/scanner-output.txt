@@ -1,0 +1,98 @@
+# Evidence — log4j_audit.py output
+
+Generated 2026-10-23T14:07:59Z.
+
+## A. Log4j 2.x artifacts
+
+```
+====================================================================================================
+APACHE LOG4J VULNERABILITY AUDIT
+====================================================================================================
+
+[1] ARTIFACTS FOUND
+
+  [MEDIUM  ] log4j-api:2.26.1
+            /tmp/log4j-sdid-evidence/jars2/log4j-api-2.26.1.jar
+              - LOG4J-SDID-INJECTION (MEDIUM) affects 2.9.0..(latest)
+                StructuredDataId validates only the LENGTH of the id, never its character set - the root cause of LOG4J-SDID-INJECTION in log4j-core's Rfc5424Layout. Same defect in the 3.x API (log4j-api 3.0.0-beta2).
+  [MEDIUM  ] log4j-core:2.26.1
+            /tmp/log4j-sdid-evidence/jars2/log4j-core-2.26.1.jar
+              - LOG4J-SDID-INJECTION (MEDIUM) affects 2.0..(latest)
+                Rfc5424Layout emits the RFC 5424 SD-ID verbatim - no character validation and no newline escaping - so an attacker-influenced SD-ID can terminate the structured-data element, forge syslog header fields and inject a raw CRLF, appending a forged syslog record. Bypasses newLineEscape and RFC 5425 framing. Unfixed on the 2.x line (2.26.1, 2.27.0-SNAPSHOT) AND on the 3.x line (3.0.0-beta2 live-proven, 3.0.0-beta3, 3.0.0-SNAPSHOT). Exploitable when the application builds a StructuredDataMessage from attacker-influenced data.
+
+[2] CONFIGURATION FINDINGS
+
+  (no risky Log4j configuration patterns detected)
+
+[3] SOURCE-CODE FINDINGS
+
+  (no risky Log4j API usage detected)
+
+====================================================================================================
+RESULT: 2 finding(s). Highest severity: MEDIUM
+====================================================================================================
+```
+
+## B. Log4j 3.x artifacts
+
+```
+====================================================================================================
+APACHE LOG4J VULNERABILITY AUDIT
+====================================================================================================
+
+[1] ARTIFACTS FOUND
+
+  [MEDIUM  ] log4j-api:3.0.0-beta2
+            /tmp/log4j-sdid-evidence/jars3/log4j-api-3.0.0-beta2.jar
+              - LOG4J-SDID-INJECTION (MEDIUM) affects 2.9.0..(latest)
+                StructuredDataId validates only the LENGTH of the id, never its character set - the root cause of LOG4J-SDID-INJECTION in log4j-core's Rfc5424Layout. Same defect in the 3.x API (log4j-api 3.0.0-beta2).
+  [MEDIUM  ] log4j-core:3.0.0-beta2
+            /tmp/log4j-sdid-evidence/jars3/log4j-core-3.0.0-beta2.jar
+              - LOG4J-SDID-INJECTION (MEDIUM) affects 2.0..(latest)
+                Rfc5424Layout emits the RFC 5424 SD-ID verbatim - no character validation and no newline escaping - so an attacker-influenced SD-ID can terminate the structured-data element, forge syslog header fields and inject a raw CRLF, appending a forged syslog record. Bypasses newLineEscape and RFC 5425 framing. Unfixed on the 2.x line (2.26.1, 2.27.0-SNAPSHOT) AND on the 3.x line (3.0.0-beta2 live-proven, 3.0.0-beta3, 3.0.0-SNAPSHOT). Exploitable when the application builds a StructuredDataMessage from attacker-influenced data.
+
+[2] CONFIGURATION FINDINGS
+
+  (no risky Log4j configuration patterns detected)
+
+[3] SOURCE-CODE FINDINGS
+
+  (no risky Log4j API usage detected)
+
+====================================================================================================
+RESULT: 2 finding(s). Highest severity: MEDIUM
+====================================================================================================
+```
+
+## C. Log4j 3.0.0-beta3 artifacts
+
+```
+====================================================================================================
+APACHE LOG4J VULNERABILITY AUDIT
+====================================================================================================
+
+[1] ARTIFACTS FOUND
+
+  [MEDIUM  ] log4j-api:2.24.1
+            /tmp/log4j-sdid-evidence/jars3b3/log4j-api-2.24.1.jar
+              - LOG4J-SDID-INJECTION (MEDIUM) affects 2.9.0..(latest)
+                StructuredDataId validates only the LENGTH of the id, never its character set - the root cause of LOG4J-SDID-INJECTION in log4j-core's Rfc5424Layout. Same defect in the 3.x API (log4j-api 3.0.0-beta2).
+              - CVE-2026-49844 (LOW) affects 2.13.1..2.25.4
+                MapMessage.asJson() emits bare NaN/Infinity -> invalid JSON. CVSS 5.9. Also affects 2.26.0.
+  [MEDIUM  ] log4j-core:3.0.0-beta3
+            /tmp/log4j-sdid-evidence/jars3b3/log4j-core-3.0.0-beta3.jar
+              - LOG4J-SDID-INJECTION (MEDIUM) affects 2.0..(latest)
+                Rfc5424Layout emits the RFC 5424 SD-ID verbatim - no character validation and no newline escaping - so an attacker-influenced SD-ID can terminate the structured-data element, forge syslog header fields and inject a raw CRLF, appending a forged syslog record. Bypasses newLineEscape and RFC 5425 framing. Unfixed on the 2.x line (2.26.1, 2.27.0-SNAPSHOT) AND on the 3.x line (3.0.0-beta2 live-proven, 3.0.0-beta3, 3.0.0-SNAPSHOT). Exploitable when the application builds a StructuredDataMessage from attacker-influenced data.
+
+[2] CONFIGURATION FINDINGS
+
+  (no risky Log4j configuration patterns detected)
+
+[3] SOURCE-CODE FINDINGS
+
+  (no risky Log4j API usage detected)
+
+====================================================================================================
+RESULT: 3 finding(s). Highest severity: MEDIUM
+====================================================================================================
+```

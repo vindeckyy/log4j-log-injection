@@ -1,0 +1,52 @@
+# Annotated bytecode — StructuredDataId, log4j-api 3.0.0-beta2
+
+Source: org/apache/logging/log4j/message/StructuredDataId.class from log4j-api-3.0.0-beta2.jar
+Retrieved 2026-10-23T13:27:40Z from https://github.com/apache/logging-log4j2
+
+The 3.x API module is developed in a separate repository, so the published
+artifact is inspected directly. No character-set validation exists.
+
+```
+  public org.apache.logging.log4j.message.StructuredDataId(java.lang.String, java.lang.String[], java.lang.String[], int);
+    Code:
+       0: aload_0
+       1: invokespecial #7                  // Method java/lang/Object."<init>":()V
+       4: iconst_m1
+       5: istore        5
+       7: aload_1
+       8: ifnull        66
+      11: iload         4
+      13: ifgt          20
+      16: bipush        32
+      18: istore        4
+      20: aload_1
+      21: invokevirtual #12                 // Method java/lang/String.length:()I
+      24: iload         4
+      26: if_icmple     58
+      29: new           #18                 // class java/lang/IllegalArgumentException
+      32: dup
+      33: ldc           #20                 // String Length of id %s exceeds maximum of %d characters
+      35: iconst_2
+      36: anewarray     #8                  // class java/lang/Object
+      39: dup
+      40: iconst_0
+      41: aload_1
+      42: aastore
+      43: dup
+      44: iconst_1
+      45: iload         4
+      47: invokestatic  #22                 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+      50: aastore
+      51: invokestatic  #28                 // Method java/lang/String.format:(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;
+      54: invokespecial #32                 // Method java/lang/IllegalArgumentException."<init>":(Ljava/lang/String;)V
+      57: athrow
+      58: aload_1
+      59: ldc           #35                 // String @
+      61: invokevirtual #37                 // Method java/lang/String.indexOf:(Ljava/lang/String;)I
+      64: istore        5
+      66: iload         5
+      68: ifle          100
+      71: aload_0
+```
+
+The only guard: name.length() > maxLength -> IllegalArgumentException.

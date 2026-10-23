@@ -1,0 +1,14 @@
+version,line,released,primary_finding,attr_drift_finding,json_nonfinite_finding,notes
+2.17.1,2.x,2021-12-27,VULNERABLE,n/a,n/a,live-proven; Maven Central publication date
+2.24.3,2.x,2024-12-13,VULNERABLE,n/a,n/a,live-proven
+2.25.3,2.x,2025-12-16,VULNERABLE,n/a,VULNERABLE,live-proven; before the CVE-2026-34481 fix
+2.25.4,2.x,2026-03-28,VULNERABLE,n/a,fixed,CVE-2026-34481 fix landed here; live-proven
+2.26.1,2.x,2026-07-02,VULNERABLE,not affected,fixed,latest 2.x release; live-proven
+3.0.0-alpha1,3.x,2023-06-18,VULNERABLE,not affected,not affected,Maven Central publication date; source verified
+3.0.0-beta1,3.x,2023-12-22,VULNERABLE,not affected,not affected,source verified
+3.0.0-beta2,3.x,2024-02-21,VULNERABLE,VULNERABLE,VULNERABLE,live-proven
+3.0.0-beta3,3.x,2024-11-12,VULNERABLE,VULNERABLE,VULNERABLE,live-proven; latest 3.x release
+origin/2.x,2.x,unreleased,VULNERABLE,n/a,n/a,2.27.0-SNAPSHOT; source verified
+origin/2.26.x,2.x,unreleased,VULNERABLE,n/a,n/a,2.26.2-SNAPSHOT; source verified
+origin/2.25.x,2.x,unreleased,VULNERABLE,n/a,n/a,2.25.6-SNAPSHOT; source verified
+origin/main,3.x,unreleased,VULNERABLE,VULNERABLE,VULNERABLE,3.0.0-SNAPSHOT; source verified

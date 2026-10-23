@@ -1,0 +1,110 @@
+# Annotated source — Rfc5424Layout, Log4j 2.26.1
+
+Source: rel/2.26.1:log4j-core/src/main/java/org/apache/logging/log4j/core/layout/Rfc5424Layout.java
+Retrieved 2026-10-23T13:27:40Z from https://github.com/apache/logging-log4j2
+
+```java
+ 360:         final String text = (message instanceof StructuredDataMessage || message instanceof MessageCollectionMessage)
+ 361:                 ? message.getFormat()
+ 362:                 : message.getFormattedMessage();
+ 363: 
+ 364:         if (text != null && text.length() > 0) {
+ 365:             buffer.append(' ').append(escapeNewlines(text, escapeNewLine));
+ 366:         }
+ 367: 
+ 368:         if (exceptionFormatters != null && event.getThrown() != null) {
+ 369:             final StringBuilder exception = new StringBuilder(LF);
+ 370:             for (final PatternFormatter formatter : exceptionFormatters) {
+ 554:     private void formatStructuredElement(
+ 555:             final String id, final StructuredDataElement data, final StringBuilder sb, final ListChecker checker) {
+ 556:         if ((id == null && defaultId == null) || data.discard()) {
+ 557:             return;
+ 558:         }
+ 559: 
+ 560:         sb.append('[');
+ 561:         sb.append(id);
+ 562:         if (!mdcSdId.toString().equals(id)) {
+ 563:             appendMap(data.getPrefix(), data.getFields(), sb, ListChecker.NOOP_CHECKER);
+ 564:         } else {
+ 565:             appendMap(data.getPrefix(), data.getFields(), sb, checker);
+ 566:         }
+ 567:         sb.append(']');
+ 568:     }
+ 569: 
+ 570:     private String getId(final StructuredDataId id) {
+ 571:         final StringBuilder sb = new StringBuilder();
+ 572:         if (id == null || id.getName() == null) {
+ 573:             sb.append(defaultId);
+ 574:         } else {
+ 575:             sb.append(id.getName());
+ 576:         }
+ 577:         String ein = id != null ? id.getEnterpriseNumber() : enterpriseNumber;
+ 578:         if (StructuredDataId.RESERVED.equals(ein)) {
+ 579:             ein = enterpriseNumber;
+ 580:         }
+ 581:         if (!StructuredDataId.RESERVED.equals(ein)) {
+ 582:             sb.append('@').append(ein);
+ 583:         }
+ 584:         return sb.toString();
+ 585:     }
+ 586: 
+ 600:             if (checker.check(entry.getKey()) && entry.getValue() != null) {
+ 601:                 sb.append(' ');
+ 602:                 if (prefix != null) {
+ 603:                     sb.append(prefix);
+ 604:                 }
+ 605:                 // No need to escape new lines, since parameter names cannot contain them.
+ 606:                 final String safeKey = sanitizeParamName(entry.getKey());
+ 607:                 final String safeValue = escapeNewlines(escapeParamValue(entry.getValue()), escapeNewLine);
+ 608:                 StringBuilders.appendKeyDqValue(sb, safeKey, safeValue);
+ 609:             }
+ 610:         }
+ 611:     }
+ 612: 
+ 620:      * @return a sanitized parameter name compliant with RFC 5424
+ 621:      */
+ 622:     private String sanitizeParamName(final String key) {
+ 623:         final int length = key.length();
+ 624:         if (length == 0) {
+ 625:             return "?";
+ 626:         }
+ 627:         if (length > SD_PARAM_NAME_MAX_LENGTH) {
+ 628:             return sanitizeParamNameSlowPath(key);
+ 629:         }
+ 630:         for (int i = 0; i < length; i++) {
+ 631:             if (!isParamNameCharacterValid(key.charAt(i))) {
+ 632:                 return sanitizeParamNameSlowPath(key);
+ 633:             }
+ 634:         }
+ 635:         return key;
+ 636:     }
+ 637: 
+ 638:     private String sanitizeParamNameSlowPath(final String key) {
+ 639:         final StringBuilder sb = new StringBuilder(SD_PARAM_NAME_MAX_LENGTH);
+ 640:         final int maxLength = Math.min(key.length(), SD_PARAM_NAME_MAX_LENGTH);
+ 641:         for (int i = 0; i < maxLength; i++) {
+ 642:             final char c = key.charAt(i);
+ 643:             sb.append(isParamNameCharacterValid(c) ? c : '?');
+ 644:         }
+ 645:         return sb.toString();
+ 646:     }
+ 664:     private static boolean isParamNameCharacterValid(final char c) {
+ 665:         return c > 32 && c <= 126 && c != '=' && c != ']' && c != '"';
+ 666:     }
+ 667: 
+ 668:     private String escapeParamValue(final String value) {
+ 669:         StringBuilder output = null;
+ 670:         for (int i = 0; i < value.length(); i++) {
+ 671:             final char cur = value.charAt(i);
+ 672:             if (cur == '"' || cur == ']' || cur == '\\') {
+ 673:                 if (output == null) {
+ 674:                     output = new StringBuilder(value.substring(0, i));
+```
+
+Anchors:
+- 365  MSG is newline-escaped
+- 561  SD-ID is written verbatim  <-- THE SINK
+- 606  PARAM-NAME sanitised
+- 607  PARAM-VALUE escaped
+- 622  sanitizeParamName()
+- 668  escapeParamValue()

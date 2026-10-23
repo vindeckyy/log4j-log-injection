@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PoC config A: file appender.
+
+  newLineEscape IS enabled. The operator has correctly turned on newline
+  escaping, yet the SD-ID bypasses it completely.
+-->
+<Configuration status="WARN">
+  <Appenders>
+    <File name="F" fileName="out-sdid.txt" append="false">
+      <Rfc5424Layout id="default@32473" appName="app" newLine="true" newLineEscape="\\n" includeMDC="true"/>
+    </File>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="F"/>
+    </Root>
+  </Loggers>
+</Configuration>

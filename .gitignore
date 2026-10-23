@@ -1,0 +1,17 @@
+# PoC build outputs
+*.class
+__pycache__/
+*.pyc
+
+# PoC run outputs
+poc/jars/
+poc/out-sdid.txt
+poc/wire.bin
+poc/sink.log
+poc/log4j2.xml
+poc/out3/
+
+# Evidence capture working directory
+docs/evidence/wire*.bin
+docs/evidence/sink.log
+docs/evidence/out-sdid.txt

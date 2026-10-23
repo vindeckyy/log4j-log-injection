@@ -1,0 +1,73 @@
+# Annotated source — Rfc5424Layout, Log4j 3.0.0-SNAPSHOT (origin/main)
+
+Source: origin/main:log4j-core/src/main/java/org/apache/logging/log4j/core/layout/Rfc5424Layout.java
+Retrieved 2026-10-23T13:27:40Z from https://github.com/apache/logging-log4j2
+
+```java
+  88:      */
+  89:     public static final Pattern PARAM_VALUE_ESCAPE_PATTERN = Pattern.compile("[\\\"\\]\\\\]");
+  90: 
+ 364:         final String text = (message instanceof StructuredDataMessage || message instanceof MessageCollectionMessage)
+ 365:                 ? message.getFormat()
+ 366:                 : message.getFormattedMessage();
+ 367: 
+ 368:         if (text != null && text.length() > 0) {
+ 369:             buffer.append(' ').append(escapeNewlines(text, escapeNewLine));
+ 370:         }
+ 371: 
+ 372:         if (exceptionFormatters != null && event.getThrown() != null) {
+ 544:     private void formatStructuredElement(
+ 545:             final String id, final StructuredDataElement data, final StringBuilder sb, final ListChecker checker) {
+ 546:         if ((id == null && defaultId == null) || data.discard()) {
+ 547:             return;
+ 548:         }
+ 549: 
+ 550:         sb.append('[');
+ 551:         sb.append(id);
+ 552:         if (!mdcSdId.toString().equals(id)) {
+ 553:             appendMap(data.getPrefix(), data.getFields(), sb, ListChecker.NOOP_CHECKER);
+ 554:         } else {
+ 555:             appendMap(data.getPrefix(), data.getFields(), sb, checker);
+ 556:         }
+ 557:         sb.append(']');
+ 558:     }
+ 559: 
+ 560:     private String getId(final StructuredDataId id) {
+ 561:         final StringBuilder sb = new StringBuilder();
+ 562:         if (id == null || id.getName() == null) {
+ 563:             sb.append(defaultId);
+ 564:         } else {
+ 565:             sb.append(id.getName());
+ 566:         }
+ 567:         String ein = id != null ? id.getEnterpriseNumber() : enterpriseNumber;
+ 568:         if (StructuredDataId.RESERVED.equals(ein)) {
+ 569:             ein = enterpriseNumber;
+ 570:         }
+ 571:         if (!StructuredDataId.RESERVED.equals(ein)) {
+ 572:             sb.append('@').append(ein);
+ 573:         }
+ 574:         return sb.toString();
+ 575:     }
+ 576: 
+ 592:                 if (prefix != null) {
+ 593:                     sb.append(prefix);
+ 594:                 }
+ 595:                 final String safeKey = escapeNewlines(escapeSDParams(entry.getKey()), escapeNewLine);
+ 596:                 final String safeValue = escapeNewlines(escapeSDParams(entry.getValue()), escapeNewLine);
+ 597:                 StringBuilders.appendKeyDqValue(sb, safeKey, safeValue);
+ 598:             }
+ 599:         }
+ 600:     }
+ 601: 
+ 602:     private String escapeSDParams(final String value) {
+ 603:         return PARAM_VALUE_ESCAPE_PATTERN.matcher(value).replaceAll("\\\\$0");
+ 604:     }
+ 605: 
+```
+
+Anchors:
+- 89   PARAM_VALUE_ESCAPE_PATTERN
+- 369  MSG is newline-escaped
+- 551  SD-ID is written verbatim  <-- THE SINK
+- 595  PARAM-NAME escaped
+- 596  PARAM-VALUE escaped

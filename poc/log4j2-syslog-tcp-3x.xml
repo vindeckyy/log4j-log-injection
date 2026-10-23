@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PoC config C: network syslog over TCP, Log4j 3.x attribute names.
+
+  Log4j 3.0.0-beta3 renamed the Rfc5424Layout attributes (see
+  LOG4J-RFC5424-ATTR-DRIFT), so this file uses the 3.x spellings:
+  includeNL / escapeNL instead of newLine / newLineEscape.
+
+  newline escaping is ENABLED here. The SD-ID bypasses it anyway.
+-->
+<Configuration status="ERROR">
+  <Appenders>
+    <Socket name="NET" host="127.0.0.1" port="${sys:syslogPort:-5140}" protocol="TCP" immediateFlush="true">
+      <Rfc5424Layout id="default@32473" appName="app" includeNL="true" escapeNL="&#92;n" includeMDC="true"/>
+    </Socket>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="NET"/>
+    </Root>
+  </Loggers>
+</Configuration>
